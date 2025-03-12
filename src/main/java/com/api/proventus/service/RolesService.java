@@ -11,6 +11,7 @@ import com.api.proventus.repositories.UserRolesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
@@ -56,5 +57,11 @@ public class RolesService {
         addRoles.setRole(role);
 
         return userRolesRepository.save(addRoles);
+    }
+
+    public ArrayList<Role> getRoles() {
+        ArrayList<Role> roles = new ArrayList<>();
+        this.rolesRepository.findAll().forEach(roles::add);
+        return roles;
     }
 }

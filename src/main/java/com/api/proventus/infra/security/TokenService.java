@@ -31,6 +31,7 @@ public class TokenService {
         }
     }
 
+
     public String validateToken(String token){
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -47,4 +48,8 @@ public class TokenService {
     private Instant generateExpirationDate(){
         return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));
     }
+
+
+    //created refresh token
+
 }

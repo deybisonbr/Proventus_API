@@ -27,35 +27,14 @@ public class SecurityFilter extends OncePerRequestFilter {
         this.userService = userService;
     }
 
-//    @Override
-//    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-//        var token = this.recoverToken(request);
-//        var login = tokenService.validateToken(token);
-//
-//        if(login != null) {
-//            User user = userService.findByEmail(login);
-////            var authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
-//            var authorities = user.getAuthorities();;
-//            var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//        }
-//
-//        filterChain.doFilter(request, response);
-//    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var token = this.recoverToken(request);
-        var userId = tokenService.validateToken(token);  // Pega o ID do usuário do token
+        var userId = tokenService.validateToken(token);
 
         if (userId != null) {
-            // Recupera o usuário do banco de dados usando o ID
             User user = userService.findById(UUID.fromString(userId));
-
-            // Carrega as authorities do usuário com base nas roles no banco
             var authorities = user.getAuthorities();
-
-            // Cria a autenticação com todas as authorities do usuário
             var authentication = new UsernamePasswordAuthenticationToken(user, null, authorities);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
@@ -68,6 +47,6 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return null;
         }
-        return authHeader.substring(7); // Remove "Bearer " do token
+        return authHeader.substring(7);
     }
 }
