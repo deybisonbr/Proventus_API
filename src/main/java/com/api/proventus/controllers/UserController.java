@@ -1,15 +1,34 @@
 package com.api.proventus.controllers;
 
+import com.api.proventus.domain.user.User;
+import com.api.proventus.dto.role.AddRoleToUserDTO;
+import com.api.proventus.dto.user.RegisterRequestDTO;
+import com.api.proventus.dto.user.UserResponseDTO;
+import com.api.proventus.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
+    @Autowired
+    private UserService userService;
+
     @GetMapping
     public ResponseEntity<String> getUser() {
         return ResponseEntity.ok("success");
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity register(@RequestBody RegisterRequestDTO registerRequestDTO) {
+        User newuser = this.userService.createUser(registerRequestDTO);
+
+        if(newuser == null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Name or email already exists");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new UserResponseDTO(newuser.getId(), newuser.getName(),newuser.getEmail() ));
     }
 }
