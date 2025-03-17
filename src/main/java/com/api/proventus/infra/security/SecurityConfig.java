@@ -11,21 +11,25 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, SecurityFilter securityFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CorsFilter corsFilter, SecurityFilter securityFilter) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/role/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/validate-token").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/role/**").hasRole("USER")
                         .anyRequest().authenticated()
-                ).addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);
+                )
+                .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)  // Adicionando CORS Filter aqui
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);  // Adicionando seu Security Filter
         return http.build();
     }
 

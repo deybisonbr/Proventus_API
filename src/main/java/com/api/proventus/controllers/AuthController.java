@@ -1,6 +1,7 @@
 package com.api.proventus.controllers;
 
 import com.api.proventus.domain.user.User;
+import com.api.proventus.dto.error.ErrorResponseDTO;
 import com.api.proventus.dto.login.LoginRequestDTO;
 import com.api.proventus.dto.login.LoginResponseDTO;
 import com.api.proventus.infra.security.TokenService;
@@ -9,13 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
@@ -25,9 +23,14 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO loginRequestDTO) {
 
+        if(loginRequestDTO.email() == null || loginRequestDTO.password() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDTO(401, "email or password cannot be empty"));
+        }
+
         User user = this.authService.login(loginRequestDTO);
+
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email or Password is incorrect");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponseDTO(401, "incorrect email or password"));
         }
 
         String token = this.tokenService.genereteToken(user);
@@ -35,5 +38,14 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(new LoginResponseDTO(user.getId(),token));
 
 
+    }
+
+    @PostMapping("/validate-token")
+    public ResponseEntity<?> validateToken(@RequestHeader("Authorization") String token) {
+        if (tokenService.validateToken(token) == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+        }
+
+        return ResponseEntity.ok("valid token");
     }
 }

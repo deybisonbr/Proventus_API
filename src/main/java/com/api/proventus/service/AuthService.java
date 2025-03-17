@@ -22,6 +22,9 @@ public class AuthService implements UserDetailsService {
 
     public User login(LoginRequestDTO loginRequestDTO) {
         User user = this.userRepository.findUserByEmail(loginRequestDTO.email());
+        if(user == null){
+            return null;
+        }
         if(passwordEncoder.matches( loginRequestDTO.password(),user.getPassword())) {
             return user;
         }

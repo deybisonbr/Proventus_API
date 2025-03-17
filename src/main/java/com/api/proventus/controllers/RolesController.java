@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Controller
-@RequestMapping("/api/role")
+@RequestMapping("/api/v1/role")
 public class RolesController {
 
     @Autowired
