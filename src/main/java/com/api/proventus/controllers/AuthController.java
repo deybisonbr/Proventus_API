@@ -4,6 +4,8 @@ import com.api.proventus.domain.user.User;
 import com.api.proventus.dto.error.ErrorResponseDTO;
 import com.api.proventus.dto.login.LoginRequestDTO;
 import com.api.proventus.dto.login.LoginResponseDTO;
+import com.api.proventus.dto.login.LoginUserData;
+import com.api.proventus.dto.notification.NotificationResponseDTO;
 import com.api.proventus.infra.security.TokenService;
 import com.api.proventus.service.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -47,5 +51,15 @@ public class AuthController {
         }
 
         return ResponseEntity.ok("valid token");
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<LoginUserData> getNotificationsByUser(@RequestHeader("Authorization") String authorizationHeader) {
+        // Extrair o token JWT do cabeçalho "Authorization"
+        String token = authorizationHeader.substring(7); // Remove "Bearer " do início
+
+        LoginUserData loginUserData = authService.userDataByToken(token);
+
+        return ResponseEntity.ok(loginUserData);
     }
 }

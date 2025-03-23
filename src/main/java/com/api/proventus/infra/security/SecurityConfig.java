@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/validate-token").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/role/**").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/permission/user").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)  // Adicionando CORS Filter aqui

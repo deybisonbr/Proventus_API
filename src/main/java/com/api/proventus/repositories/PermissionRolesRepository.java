@@ -1,12 +1,11 @@
 package com.api.proventus.repositories;
 
-import com.api.proventus.domain.role.UserRoles;
+import com.api.proventus.domain.permission.RolePermission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.UUID;
 
 @Repository
-public interface UserRolesRepository extends JpaRepository<UserRoles, UUID> {
-    boolean existsByUserIdAndRoleId(UUID userId, UUID roleId);
+public interface PermissionRolesRepository extends JpaRepository<RolePermission, UUID> {
 }

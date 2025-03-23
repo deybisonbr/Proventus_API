@@ -24,6 +24,7 @@ public class User implements UserDetails {
     private UUID id;
     private String name;
     private String username;
+    private String occupation;
     private  String email;
     private String password;
     private Boolean isActive;
